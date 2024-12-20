@@ -28,8 +28,8 @@ public class Buscaminas {
             int fila = (int) (Math.random() * tablero.length);
             int columna = (int) (Math.random() * tablero[0].length);
 
-            if (tablero[fila][columna].getNumero() != -1) {
-                tablero[fila][columna].setNumero(-1);
+            if (tablero[fila][columna] == null) {
+                tablero[fila][columna] = new Celda(-1);
                 contBombas++;
             }
         }
@@ -38,10 +38,13 @@ public class Buscaminas {
     public void colocarNumeros(Celda[][] tablero) {
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                if (tablero[i][j].getNumero() == -1) {
+                /*if (tablero[i][j].getNumero() == -1) {
                     continue;
+                }*/
+
+                if (tablero[i][j] == null) {
+                    tablero[i][j] = new Celda(this.contarBombasAdyacentes(i, j));
                 }
-                tablero[i][j].setNumero(this.contarBombasAdyacentes(i, j));
             }
         }
     }
@@ -49,49 +52,49 @@ public class Buscaminas {
     public int contarBombasAdyacentes(int fila, int columna) {
         int contBombas = 0;
 
-        if (this.esCeldaValida(fila - 1, columna)) {
+        if (this.esCeldaValida(fila - 1, columna) && this.tablero[fila - 1][columna] != null) {
             if (this.tablero[fila - 1][columna].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila + 1, columna)) {
+        if (this.esCeldaValida(fila + 1, columna) && this.tablero[fila + 1][columna] != null) {
             if (this.tablero[fila + 1][columna].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila, columna - 1)) {
+        if (this.esCeldaValida(fila, columna - 1) && this.tablero[fila][columna - 1] != null) {
             if (this.tablero[fila][columna - 1].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila, columna + 1)) {
+        if (this.esCeldaValida(fila, columna + 1) && this.tablero[fila][columna + 1] != null) {
             if (this.tablero[fila][columna + 1].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila - 1, columna - 1)) {
+        if (this.esCeldaValida(fila - 1, columna - 1) && this.tablero[fila - 1][columna - 1] != null) {
             if (this.tablero[fila - 1][columna - 1].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila - 1, columna + 1)) {
+        if (this.esCeldaValida(fila - 1, columna + 1) && this.tablero[fila - 1][columna + 1] != null) {
             if (this.tablero[fila - 1][columna + 1].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila + 1, columna - 1)) {
+        if (this.esCeldaValida(fila + 1, columna - 1) && this.tablero[fila + 1][columna - 1] != null) {
             if (this.tablero[fila + 1][columna - 1].getNumero() == -1) {
                 contBombas++;
             }
         }
 
-        if (this.esCeldaValida(fila + 1, columna + 1)) {
+        if (this.esCeldaValida(fila + 1, columna + 1) && this.tablero[fila + 1][columna + 1] != null) {
             if (this.tablero[fila + 1][columna + 1].getNumero() == -1) {
                 contBombas++;
             }
@@ -132,7 +135,7 @@ public class Buscaminas {
 
     public boolean estaRevelada(int fila, int columna) {
         if (this.esCeldaValida(fila, columna)) {
-            return this.tablero[fila][columna].isRelevada();
+            return this.tablero[fila][columna].isRevelada();
         }
 
         return false;
@@ -140,7 +143,25 @@ public class Buscaminas {
 
     public void actualizarReveladoCelda(int fila, int columna) {
         //Recursividad
+        if (!this.esCeldaValida(fila, columna) || this.tablero[fila][columna].isRevelada() || this.tablero[fila][columna].getNumero() == -1) {
+            return;
+        }
 
+        if (this.tablero[fila][columna].isBloqueada()) {
+            this.tablero[fila][columna].setBloqueada(false);
+        }
+        this.tablero[fila][columna].setRevelada(true);
+
+        if (this.tablero[fila][columna].getNumero() == 0) {
+            this.actualizarReveladoCelda(fila - 1, columna);
+            this.actualizarReveladoCelda(fila + 1, columna);
+            this.actualizarReveladoCelda(fila, columna - 1);
+            this.actualizarReveladoCelda(fila, columna + 1);
+            this.actualizarReveladoCelda(fila - 1, columna - 1);
+            this.actualizarReveladoCelda(fila - 1, columna + 1);
+            this.actualizarReveladoCelda(fila + 1, columna - 1);
+            this.actualizarReveladoCelda(fila + 1, columna + 1);
+        }
     }
 
     public boolean estaResuelto() {
@@ -150,9 +171,9 @@ public class Buscaminas {
 
         for (int i = 0; i < this.tablero.length; i++) {
             for (int j = 0; j < this.tablero[i].length; j++) {
-                if (this.tablero[i][j].getNumero() == 1 && !this.tablero[i][j].isRelevada()) {
+                if (this.tablero[i][j].getNumero() == -1 && !this.tablero[i][j].isRevelada()) {
                     contBombas++;
-                } else if (this.tablero[i][j].getNumero() != 1 && this.tablero[i][j].isRelevada()) {
+                } else if (this.tablero[i][j].getNumero() != -1 && this.tablero[i][j].isRevelada()) {
                     contCeldas++;
                 }
             }
@@ -173,20 +194,32 @@ public class Buscaminas {
             for (int j = 0; j < tablero[i].length; j++) {
                 if (this.tablero[i][j].isBloqueada()) {
                     tablero[i][j] = "B";
-                } else if (!this.tablero[i][j].isRelevada()) {
+                }
+
+                if (!this.tablero[i][j].isRevelada()) {
                     tablero[i][j] = "*";
-                } else if (this.tablero[i][j].isRelevada()) {
+                } else {
                     tablero[i][j] = ColorNumero.obtenerColorAnsi(this.tablero[i][j].getNumero()) + this.tablero[i][j].getNumero() + Configuracion.RESET_ANSI;
                 }
             }
         }
 
-        return null;
+        return tablero;
     }
 
     public String[][] obtenerTableroResuelto() {
-        return null;
+        String[][] tablero = new String[this.filas][this.columnas];
+
+        for (int i = 0; i < tablero.length; i++) {
+            for (int j = 0; j < tablero[i].length; j++) {
+                tablero[i][j] = ColorNumero.obtenerColorAnsi(this.tablero[i][j].getNumero()) + this.tablero[i][j].getNumero() + Configuracion.RESET_ANSI;
+            }
+        }
+
+        return tablero;
     }
 
-
+    public Celda[][] getTablero() {
+        return this.tablero;
+    }
 }

@@ -3,12 +3,12 @@ package es.masanz.ut5.buscaminas.model;
 public class Celda {
 
     private int numero;
-    private boolean relevada;
+    private boolean revelada;
     private boolean bloqueada;
 
     public Celda(int numero) {
         this.numero = numero;
-        this.relevada = false;
+        this.revelada = false;
         this.bloqueada = false;
     }
 
@@ -20,12 +20,12 @@ public class Celda {
         this.numero = numero;
     }
 
-    public boolean isRelevada() {
-        return this.relevada;
+    public boolean isRevelada() {
+        return this.revelada;
     }
 
-    public void setRelevada(boolean relevada) {
-        this.relevada = relevada;
+    public void setRevelada(boolean relevada) {
+        this.revelada = relevada;
     }
 
     public boolean isBloqueada() {

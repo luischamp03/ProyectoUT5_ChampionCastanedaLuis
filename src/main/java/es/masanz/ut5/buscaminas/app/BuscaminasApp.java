@@ -176,7 +176,7 @@ public class BuscaminasApp extends Application {
         return panelSuperior;
     }
 
-    private void reiniciar(){
+    private void reiniciar() {
         tiempo = 0;
         bombasDetectatas = 0;
         tiempoTexto.setText("Tiempo: 0");
@@ -218,7 +218,7 @@ public class BuscaminasApp extends Application {
         celda.setOnMouseEntered(event -> {
             boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
             boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
-            if(!estaBloqueada && !estaRevelada) {
+            if (!estaBloqueada && !estaRevelada) {
                 rect.setFill(COLOR_HOVER);
             }
         });
@@ -227,7 +227,7 @@ public class BuscaminasApp extends Application {
         celda.setOnMouseExited(event -> {
             boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
             boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
-            if(!estaBloqueada && !estaRevelada) {
+            if (!estaBloqueada && !estaRevelada) {
                 rect.setFill(COLOR_BOTON);
             }
         });
@@ -235,7 +235,7 @@ public class BuscaminasApp extends Application {
         celda.setOnMousePressed(event -> {
             boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
             boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
-            if(!estaBloqueada && !estaRevelada) {
+            if (!estaBloqueada && !estaRevelada) {
                 rect.setFill(COLOR_PRESIONADO);
             }
         });
@@ -243,7 +243,7 @@ public class BuscaminasApp extends Application {
         celda.setOnMouseReleased(event -> {
             boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
             boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
-            if(!estaBloqueada && !estaRevelada) {
+            if (!estaBloqueada && !estaRevelada) {
                 rect.setFill(COLOR_HOVER);
             }
         });
@@ -252,9 +252,9 @@ public class BuscaminasApp extends Application {
         celda.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
-                if(!estaBloqueada){
+                if (!estaBloqueada) {
                     buscaminas.actualizarReveladoCelda(fila, columna);
-                    if(buscaminas.getTablero()[fila][columna].getNumero()==-1){
+                    if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
                         timeline.stop();
                         Stage dialogo = new Stage();
                         dialogo.initOwner(buscaminasScene.getWindow());
@@ -295,7 +295,7 @@ public class BuscaminasApp extends Application {
                     for (int filaAux = 0; filaAux < dificultad.getFilas(); filaAux++) {
                         for (int columnaAux = 0; columnaAux < dificultad.getColumnas(); columnaAux++) {
                             boolean estaRevelada = buscaminas.estaRevelada(filaAux, columnaAux);
-                            if(estaRevelada) {
+                            if (estaRevelada) {
                                 StackPane celdaAux = (StackPane) grid.getChildren().get(filaAux * dificultad.getColumnas() + columnaAux);
                                 Rectangle auxRect = (Rectangle) celdaAux.getChildren().get(0);
                                 Text auxTexto = (Text) celdaAux.getChildren().get(1);
@@ -307,28 +307,28 @@ public class BuscaminasApp extends Application {
                                 auxRect.setFill(Configuracion.BLANCO_FX);
                             }
                             boolean auxEstaBloqueada = buscaminas.estaBloqueada(filaAux, columnaAux);
-                            if(auxEstaBloqueada){
+                            if (auxEstaBloqueada) {
                                 auxBombasDetectatas++;
                             }
                             bombasDetectatas = auxBombasDetectatas;
                             contadorBombasTexto.setText("Bombas: " + auxBombasDetectatas);
                         }
                     }
-                    if(buscaminas.estaResuelto()){
+                    if (buscaminas.estaResuelto()) {
                         timeline.stop();
                         Stage dialogo = new Stage();
                         dialogo.initOwner(buscaminasScene.getWindow());
                         dialogo.initModality(Modality.APPLICATION_MODAL); // Bloquear interacciones con la pantalla principal
 
-                        Label lblNombre = new Label("Dificultad: "+dificultad+"\nTiempo: "+tiempo+" segundos.\nIngresa tu nombre:");
+                        Label lblNombre = new Label("Dificultad: " + dificultad + "\nTiempo: " + tiempo + " segundos.\nIngresa tu nombre:");
                         TextField campoNombre = new TextField();
                         Button btnEnviar = new Button("Enviar");
 
                         btnEnviar.setOnAction(event2 -> {
                             String nombre = campoNombre.getText();
-                            String[] registro = {dificultad.toString(), nombre, tiempo+""};
+                            String[] registro = {dificultad.toString(), nombre, tiempo + ""};
                             boolean registroValido = dashboard.nuevoRegistro(registro);
-                            if(registroValido) {
+                            if (registroValido) {
                                 dialogo.close();
                                 Scene pantallaInicial = crearPantallaInicial();
                                 this.stage.setScene(pantallaInicial);
@@ -361,7 +361,7 @@ public class BuscaminasApp extends Application {
                 }
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
-                if(!estaRevelada) {
+                if (!estaRevelada) {
                     buscaminas.actualizarBloqueoCelda(fila, columna);
                     boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
                     if (estaBloqueada) {
