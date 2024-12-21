@@ -30,7 +30,7 @@ public class Dashboard {
 
             try {
                 tiempo = Integer.parseInt(registro[2].trim());
-                if (tiempo > 0) {
+                if (tiempo <= 0) {
                     return false;
                 }
             } catch (NumberFormatException e) {
@@ -38,6 +38,8 @@ public class Dashboard {
             }
 
             this.contenido += String.join(",", registro) + ";";
+
+            return true;
         }
 
         return false;
