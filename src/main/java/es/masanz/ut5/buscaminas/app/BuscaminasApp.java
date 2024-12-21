@@ -53,7 +53,7 @@ public class BuscaminasApp extends Application {
     public void start(Stage stage) {
         this.dashboard = new Dashboard();
         this.stage = stage;
-        Scene pantallaInicial = crearPantallaInicial();
+        Scene pantallaInicial = this.crearPantallaInicial();
         this.stage.setScene(pantallaInicial);
         this.stage.setTitle("Buscaminas - Interfaz");
         this.stage.setResizable(false);
@@ -67,35 +67,35 @@ public class BuscaminasApp extends Application {
 
         Button btnIniciarFacil = new Button("FACIL");
         btnIniciarFacil.setOnAction(event -> {
-            dificultad = Nivel.FACIL;
-            crearInterfazBuscaminas();
-            buscaminasScene = new Scene(panelBuscaminas);
-            stage.setScene(buscaminasScene);
+            this.dificultad = Nivel.FACIL;
+            this.crearInterfazBuscaminas();
+            this.buscaminasScene = new Scene(this.panelBuscaminas);
+            this.stage.setScene(this.buscaminasScene);
         });
         root.getChildren().add(btnIniciarFacil);
 
         Button btnIniciarMedio = new Button("MEDIO");
         btnIniciarMedio.setOnAction(event -> {
-            dificultad = Nivel.MEDIO;
-            crearInterfazBuscaminas();
-            buscaminasScene = new Scene(panelBuscaminas);
-            stage.setScene(buscaminasScene);
+            this.dificultad = Nivel.MEDIO;
+            this.crearInterfazBuscaminas();
+            this.buscaminasScene = new Scene(this.panelBuscaminas);
+            this.stage.setScene(this.buscaminasScene);
         });
         root.getChildren().add(btnIniciarMedio);
 
         Button btnIniciarDificil = new Button("DIFICIL");
         btnIniciarDificil.setOnAction(event -> {
-            dificultad = Nivel.DIFICIL;
-            crearInterfazBuscaminas();
-            buscaminasScene = new Scene(panelBuscaminas);
-            stage.setScene(buscaminasScene);
+            this.dificultad = Nivel.DIFICIL;
+            this.crearInterfazBuscaminas();
+            this.buscaminasScene = new Scene(this.panelBuscaminas);
+            this.stage.setScene(this.buscaminasScene);
         });
         root.getChildren().add(btnIniciarDificil);
 
         Button btnPuntuaciones = new Button("Ver puntuaciones");
         btnPuntuaciones.setOnAction(event -> {
-            Scene scene = crearPantallaPuntuaciones(stage, pantallaInicial);
-            stage.setScene(scene);
+            Scene scene = this.crearPantallaPuntuaciones(this.stage, pantallaInicial);
+            this.stage.setScene(scene);
         });
         root.getChildren().add(btnPuntuaciones);
 
@@ -128,7 +128,7 @@ public class BuscaminasApp extends Application {
         tablaPuntuaciones.add(headerNombre, 1, 0);
         tablaPuntuaciones.add(headerTiempo, 2, 0);
 
-        String[][] puntuaciones = dashboard.obtenerContenido();
+        String[][] puntuaciones = this.dashboard.obtenerContenido();
 
         for (int i = 0; i < puntuaciones.length; i++) {
             for (int j = 0; j < puntuaciones[i].length; j++) {
@@ -146,57 +146,57 @@ public class BuscaminasApp extends Application {
     }
 
     private void crearInterfazBuscaminas() {
-        panelBuscaminas = new BorderPane();
-        HBox panelSuperior = crearPanelSuperior();
-        GridPane tablero = crearTablero();
-        panelBuscaminas.setTop(panelSuperior);
-        panelBuscaminas.setCenter(tablero);
+        this.panelBuscaminas = new BorderPane();
+        HBox panelSuperior = this.crearPanelSuperior();
+        GridPane tablero = this.crearTablero();
+        this.panelBuscaminas.setTop(panelSuperior);
+        this.panelBuscaminas.setCenter(tablero);
     }
 
     private HBox crearPanelSuperior() {
-        tiempoTexto = new Text("Tiempo: 0");
-        timeline = new Timeline(
+        this.tiempoTexto = new Text("Tiempo: 0");
+        this.timeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
-                    tiempo++;
-                    tiempoTexto.setText("Tiempo: " + tiempo);
+                    this.tiempo++;
+                    this.tiempoTexto.setText("Tiempo: " + this.tiempo);
                 })
         );
-        timeline.setCycleCount(Timeline.INDEFINITE);
+        this.timeline.setCycleCount(Timeline.INDEFINITE);
         Button botonReinicio = new Button("Reiniciar");
-        tiempo = 0;
-        bombasDetectatas = 0;
+        this.tiempo = 0;
+        this.bombasDetectatas = 0;
         botonReinicio.setOnAction(event -> {
-            reiniciar();
+            this.reiniciar();
         });
-        timeline.play();
-        contadorBombasTexto = new Text("Bombas: 0");
-        HBox panelSuperior = new HBox(10, tiempoTexto, botonReinicio, contadorBombasTexto);
+        this.timeline.play();
+        this.contadorBombasTexto = new Text("Bombas: 0");
+        HBox panelSuperior = new HBox(10, this.tiempoTexto, botonReinicio, this.contadorBombasTexto);
         panelSuperior.setAlignment(Pos.CENTER);
         panelSuperior.setPadding(new Insets(10));
         return panelSuperior;
     }
 
     private void reiniciar() {
-        tiempo = 0;
-        bombasDetectatas = 0;
-        tiempoTexto.setText("Tiempo: 0");
-        contadorBombasTexto.setText("Bombas: 0");
-        timeline.stop();
-        timeline.play();
-        panelBuscaminas.setCenter(crearTablero());
+        this.tiempo = 0;
+        this.bombasDetectatas = 0;
+        this.tiempoTexto.setText("Tiempo: 0");
+        this.contadorBombasTexto.setText("Bombas: 0");
+        this.timeline.stop();
+        this.timeline.play();
+        this.panelBuscaminas.setCenter(this.crearTablero());
     }
 
     private GridPane crearTablero() {
-        Buscaminas buscaminas = new Buscaminas(dificultad.getFilas(), dificultad.getColumnas(), dificultad.getBombas());
+        Buscaminas buscaminas = new Buscaminas(this.dificultad.getFilas(), this.dificultad.getColumnas(), this.dificultad.getBombas());
         buscaminas.generarTablero();
         this.grid = new GridPane();
-        for (int fila = 0; fila < dificultad.getFilas(); fila++) {
-            for (int columna = 0; columna < dificultad.getColumnas(); columna++) {
-                StackPane celda = crearBoton(fila, columna, buscaminas);
-                grid.add(celda, columna, fila);
+        for (int fila = 0; fila < this.dificultad.getFilas(); fila++) {
+            for (int columna = 0; columna < this.dificultad.getColumnas(); columna++) {
+                StackPane celda = this.crearBoton(fila, columna, buscaminas);
+                this.grid.add(celda, columna, fila);
             }
         }
-        return grid;
+        return this.grid;
     }
 
     private StackPane crearBoton(int fila, int columna, Buscaminas buscaminas) {
@@ -209,7 +209,7 @@ public class BuscaminasApp extends Application {
         rect.setStrokeWidth(1);
         Text texto = new Text("");
         StackPane celda = new StackPane(rect, texto);
-        agregarEventosBoton(celda, rect, fila, columna, buscaminas);
+        this.agregarEventosBoton(celda, rect, fila, columna, buscaminas);
         return celda;
     }
 
@@ -255,9 +255,9 @@ public class BuscaminasApp extends Application {
                 if (!estaBloqueada) {
                     buscaminas.actualizarReveladoCelda(fila, columna);
                     if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
-                        timeline.stop();
+                        this.timeline.stop();
                         Stage dialogo = new Stage();
-                        dialogo.initOwner(buscaminasScene.getWindow());
+                        dialogo.initOwner(this.buscaminasScene.getWindow());
                         dialogo.initModality(Modality.APPLICATION_MODAL);
 
                         Label lblNombre = new Label("Ooohhh...\nNo has podido ganar.\n¿Quieres volver a intentarlo?");
@@ -266,7 +266,7 @@ public class BuscaminasApp extends Application {
 
                         btnEnviar.setOnAction(event2 -> {
                             dialogo.close();
-                            Scene pantallaInicial = crearPantallaInicial();
+                            Scene pantallaInicial = this.crearPantallaInicial();
                             this.stage.setScene(pantallaInicial);
                             this.stage.setTitle("Buscaminas - Interfaz");
                             this.stage.setResizable(false);
@@ -275,7 +275,7 @@ public class BuscaminasApp extends Application {
 
                         dialogo.setOnCloseRequest(event2 -> {
                             dialogo.close();
-                            Scene pantallaInicial = crearPantallaInicial();
+                            Scene pantallaInicial = this.crearPantallaInicial();
                             this.stage.setScene(pantallaInicial);
                             this.stage.setTitle("Buscaminas - Interfaz");
                             this.stage.setResizable(false);
@@ -292,11 +292,11 @@ public class BuscaminasApp extends Application {
                         dialogo.showAndWait();
                     }
                     int auxBombasDetectatas = 0;
-                    for (int filaAux = 0; filaAux < dificultad.getFilas(); filaAux++) {
-                        for (int columnaAux = 0; columnaAux < dificultad.getColumnas(); columnaAux++) {
+                    for (int filaAux = 0; filaAux < this.dificultad.getFilas(); filaAux++) {
+                        for (int columnaAux = 0; columnaAux < this.dificultad.getColumnas(); columnaAux++) {
                             boolean estaRevelada = buscaminas.estaRevelada(filaAux, columnaAux);
                             if (estaRevelada) {
-                                StackPane celdaAux = (StackPane) grid.getChildren().get(filaAux * dificultad.getColumnas() + columnaAux);
+                                StackPane celdaAux = (StackPane) this.grid.getChildren().get(filaAux * this.dificultad.getColumnas() + columnaAux);
                                 Rectangle auxRect = (Rectangle) celdaAux.getChildren().get(0);
                                 Text auxTexto = (Text) celdaAux.getChildren().get(1);
                                 int numero = buscaminas.obtenerPosicion(filaAux, columnaAux);
@@ -310,27 +310,27 @@ public class BuscaminasApp extends Application {
                             if (auxEstaBloqueada) {
                                 auxBombasDetectatas++;
                             }
-                            bombasDetectatas = auxBombasDetectatas;
-                            contadorBombasTexto.setText("Bombas: " + auxBombasDetectatas);
+                            this.bombasDetectatas = auxBombasDetectatas;
+                            this.contadorBombasTexto.setText("Bombas: " + auxBombasDetectatas);
                         }
                     }
                     if (buscaminas.estaResuelto()) {
-                        timeline.stop();
+                        this.timeline.stop();
                         Stage dialogo = new Stage();
-                        dialogo.initOwner(buscaminasScene.getWindow());
+                        dialogo.initOwner(this.buscaminasScene.getWindow());
                         dialogo.initModality(Modality.APPLICATION_MODAL); // Bloquear interacciones con la pantalla principal
 
-                        Label lblNombre = new Label("Dificultad: " + dificultad + "\nTiempo: " + tiempo + " segundos.\nIngresa tu nombre:");
+                        Label lblNombre = new Label("Dificultad: " + this.dificultad + "\nTiempo: " + this.tiempo + " segundos.\nIngresa tu nombre:");
                         TextField campoNombre = new TextField();
                         Button btnEnviar = new Button("Enviar");
 
                         btnEnviar.setOnAction(event2 -> {
                             String nombre = campoNombre.getText();
-                            String[] registro = {dificultad.toString(), nombre, tiempo + ""};
-                            boolean registroValido = dashboard.nuevoRegistro(registro);
+                            String[] registro = {this.dificultad.toString(), nombre, this.tiempo + ""};
+                            boolean registroValido = this.dashboard.nuevoRegistro(registro);
                             if (registroValido) {
                                 dialogo.close();
-                                Scene pantallaInicial = crearPantallaInicial();
+                                Scene pantallaInicial = this.crearPantallaInicial();
                                 this.stage.setScene(pantallaInicial);
                                 this.stage.setTitle("Buscaminas - Interfaz");
                                 this.stage.setResizable(false);
@@ -342,7 +342,7 @@ public class BuscaminasApp extends Application {
 
                         dialogo.setOnCloseRequest(event2 -> {
                             dialogo.close();
-                            Scene pantallaInicial = crearPantallaInicial();
+                            Scene pantallaInicial = this.crearPantallaInicial();
                             this.stage.setScene(pantallaInicial);
                             this.stage.setTitle("Buscaminas - Interfaz");
                             this.stage.setResizable(false);
@@ -366,12 +366,12 @@ public class BuscaminasApp extends Application {
                     boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
                     if (estaBloqueada) {
                         rect.setFill(Color.YELLOW);
-                        bombasDetectatas++;
+                        this.bombasDetectatas++;
                     } else {
                         rect.setFill(COLOR_BOTON);
-                        bombasDetectatas--;
+                        this.bombasDetectatas--;
                     }
-                    contadorBombasTexto.setText("Bombas: " + bombasDetectatas);
+                    this.contadorBombasTexto.setText("Bombas: " + this.bombasDetectatas);
                 }
             }
         });
