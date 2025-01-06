@@ -4,12 +4,15 @@ import es.masanz.ut5.buscaminas.model.Buscaminas;
 import es.masanz.ut5.buscaminas.model.Dashboard;
 import es.masanz.ut5.buscaminas.model.Nivel;
 import es.masanz.ut5.buscaminas.util.Configuracion;
+import javafx.scene.paint.Color;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        Scanner sc = new Scanner(System.in);
+        Scanner scInt = new Scanner(System.in);
+        Scanner scString = new Scanner(System.in);
+
         Dashboard dashboard = new Dashboard();
 
         while (true) {
@@ -22,7 +25,7 @@ public class Main {
             System.out.println("4. Ver puntuaciones");
             System.out.println("5. Salir");
             System.out.print("Elige una opcion: ");
-            int opcion = sc.nextInt();
+            int opcion = scInt.nextInt();
 
             long tiempo = 0;
 
@@ -37,8 +40,7 @@ public class Main {
                 }
 
                 System.out.print("Ingrese cualquier tecla para volver al menú principal...");
-                sc.nextLine();
-                sc.nextLine();
+                scString.nextLine();
                 continue;
             }
 
@@ -63,56 +65,69 @@ public class Main {
                 limpiarPantalla();
                 mostrarTablero(tablero);
 
+                String seleccion = "S";
+
+                while (!seleccion.equalsIgnoreCase("Y") && !seleccion.equalsIgnoreCase("N")) {
+                    System.out.print("¿Quieres bloquear o desbloquear una celda? (Y/N): ");
+                    seleccion = scString.nextLine();
+                }
+
                 int fila = -1;
 
                 while (fila < 0 || fila > dificultad.getFilas() - 1) {
                     System.out.print("Ingresa la fila de la celda (1-" + dificultad.getFilas() + "): ");
-                    fila = sc.nextInt() - 1;
+                    fila = scInt.nextInt() - 1;
                 }
 
                 int columna = -1;
 
                 while (columna < 0 || columna > dificultad.getColumnas() - 1) {
                     System.out.print("Ingresa la columna de la celda (1-" + dificultad.getColumnas() + "): ");
-                    columna = sc.nextInt() - 1;
+                    columna = scInt.nextInt() - 1;
                 }
 
-                boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
-                if (!estaBloqueada) {
-                    buscaminas.actualizarReveladoCelda(fila, columna);
-                    tablero = buscaminas.obtenerTablero();
-                    if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
-                        mostrarTablero(tablero);
-                        System.out.println("Has perdido");
-                        Thread.sleep(2000);
-                        break;
+                if (seleccion.equalsIgnoreCase("Y")) {
+                    boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
+                    if (!estaRevelada) {
+                        buscaminas.actualizarBloqueoCelda(fila, columna);
+                        tablero = buscaminas.obtenerTablero();
                     }
-                }
-
-                if (buscaminas.estaResuelto()) {
-                    tablero = buscaminas.obtenerTablero();
-                    mostrarTablero(tablero);
-
-                    long tiempoFinal = System.currentTimeMillis();
-                    tiempo = (tiempoFinal - tiempoInicio) / 1000;
-
-                    boolean registroValido = false;
-                    while (!registroValido) {
-                        System.out.println("Dificultad: " + dificultad);
-                        System.out.println("Tiempo: " + tiempo + " seg");
-                        System.out.print("Ingresa tu nombre: ");
-                        sc.nextLine();
-                        String nombre = sc.nextLine();
-
-                        String[] registro = {dificultad.toString(), nombre, tiempo + ""};
-                        registroValido = dashboard.nuevoRegistro(registro);
-
-                        if (!registroValido) {
-                            System.out.println("No has ingresado un nombre valido.");
+                } else {
+                    boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
+                    if (!estaBloqueada) {
+                        buscaminas.actualizarReveladoCelda(fila, columna);
+                        tablero = buscaminas.obtenerTablero();
+                        if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
+                            mostrarTablero(tablero);
+                            System.out.println("Has perdido");
+                            Thread.sleep(3000);
+                            break;
                         }
                     }
 
-                    break;
+                    if (buscaminas.estaResuelto()) {
+                        tablero = buscaminas.obtenerTablero();
+                        mostrarTablero(tablero);
+
+                        long tiempoFinal = System.currentTimeMillis();
+                        tiempo = (tiempoFinal - tiempoInicio) / 1000;
+
+                        boolean registroValido = false;
+                        while (!registroValido) {
+                            System.out.println("Dificultad: " + dificultad);
+                            System.out.println("Tiempo: " + tiempo + " seg");
+                            System.out.print("Ingresa tu nombre: ");
+                            String nombre = scString.nextLine();
+
+                            String[] registro = {dificultad.toString(), nombre, tiempo + ""};
+                            registroValido = dashboard.nuevoRegistro(registro);
+
+                            if (!registroValido) {
+                                System.out.println("No has ingresado un nombre valido.");
+                            }
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -140,7 +155,11 @@ public class Main {
     private static void mostrarTablero(String[][] tablero) {
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                System.out.print("[ " + tablero[i][j] + " ]");
+                if (tablero[i][j].contains("-1")) {
+                    System.out.print("[" + tablero[i][j] + " ]");
+                } else {
+                    System.out.print("[ " + tablero[i][j] + " ]");
+                }
             }
             System.out.println();
         }

@@ -143,7 +143,7 @@ public class Buscaminas {
 
     public void actualizarReveladoCelda(int fila, int columna) {
         //Recursividad
-        if (!this.esCeldaValida(fila, columna) || this.tablero[fila][columna].isRevelada() || this.tablero[fila][columna].getNumero() == -1) {
+        if (!this.esCeldaValida(fila, columna) || this.tablero[fila][columna].isRevelada() /*|| this.tablero[fila][columna].getNumero() == -1*/) {
             return;
         }
 
@@ -194,9 +194,7 @@ public class Buscaminas {
             for (int j = 0; j < tablero[i].length; j++) {
                 if (this.tablero[i][j].isBloqueada()) {
                     tablero[i][j] = "B";
-                }
-
-                if (!this.tablero[i][j].isRevelada()) {
+                } else if (!this.tablero[i][j].isRevelada()) {
                     tablero[i][j] = "*";
                 } else {
                     tablero[i][j] = ColorNumero.obtenerColorAnsi(this.tablero[i][j].getNumero()) + this.tablero[i][j].getNumero() + Configuracion.RESET_ANSI;
