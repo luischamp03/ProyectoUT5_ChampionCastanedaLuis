@@ -186,35 +186,50 @@ public class Buscaminas {
         return false;
     }
 
-    public String[][] obtenerTablero() {
-
-        String[][] tablero = new String[this.filas][this.columnas];
-
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
+    public String obtenerTablero() {
+        StringBuilder tableroString = new StringBuilder();
+        
+        for (int i = 0; i < this.filas; i++) {
+            for (int j = 0; j < this.columnas; j++) {
+                String celda;
                 if (this.tablero[i][j].isBloqueada()) {
-                    tablero[i][j] = "B";
+                    celda = "[ B ]";
                 } else if (!this.tablero[i][j].isRevelada()) {
-                    tablero[i][j] = "*";
+                    celda = "[ * ]";
                 } else {
-                    tablero[i][j] = ColorNumero.obtenerColorAnsi(this.tablero[i][j].getNumero()) + this.tablero[i][j].getNumero() + Configuracion.RESET_ANSI;
+                    int numero = this.tablero[i][j].getNumero();
+                    String numeroColor = ColorNumero.obtenerColorAnsi(numero) + numero + Configuracion.RESET_ANSI;
+                    if (numero == -1) {
+                        celda = "[" + numeroColor + " ]";
+                    } else {
+                        celda = "[ " + numeroColor + " ]";
+                    }
                 }
+                tableroString.append(celda);
             }
+            tableroString.append("\n");
         }
-
-        return tablero;
+        return tableroString.toString();
     }
 
-    public String[][] obtenerTableroResuelto() {
-        String[][] tablero = new String[this.filas][this.columnas];
+    public String obtenerTableroResuelto() {
+        StringBuilder tableroString = new StringBuilder();
 
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                tablero[i][j] = ColorNumero.obtenerColorAnsi(this.tablero[i][j].getNumero()) + this.tablero[i][j].getNumero() + Configuracion.RESET_ANSI;
+        for (int i = 0; i < this.filas; i++) {
+            for (int j = 0; j < this.columnas; j++) {
+                String celda;
+                int numero = this.tablero[i][j].getNumero();
+                String numeroColor = ColorNumero.obtenerColorAnsi(numero) + numero + Configuracion.RESET_ANSI;
+                if (numero == -1) {
+                    celda = "[" + numeroColor + " ]";
+                } else {
+                    celda = "[ " + numeroColor + " ]";
+                }
+                tableroString.append(celda);
             }
+            tableroString.append("\n");
         }
-
-        return tablero;
+        return tableroString.toString();
     }
 
     public Celda[][] getTablero() {

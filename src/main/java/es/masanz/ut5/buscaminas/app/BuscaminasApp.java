@@ -254,6 +254,10 @@ public class BuscaminasApp extends Application {
                 boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
                 if (!estaBloqueada) {
                     buscaminas.actualizarReveladoCelda(fila, columna);
+                    System.out.println("Tablero resuelto: ");
+                    System.out.println(buscaminas.obtenerTableroResuelto());
+                    System.out.println("Tablero: ");
+                    System.out.println(buscaminas.obtenerTablero());
                     if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
                         this.timeline.stop();
                         Stage dialogo = new Stage();

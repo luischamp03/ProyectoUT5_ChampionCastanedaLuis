@@ -4,7 +4,6 @@ import es.masanz.ut5.buscaminas.model.Buscaminas;
 import es.masanz.ut5.buscaminas.model.Dashboard;
 import es.masanz.ut5.buscaminas.model.Nivel;
 import es.masanz.ut5.buscaminas.util.Configuracion;
-import javafx.scene.paint.Color;
 
 import java.util.Scanner;
 
@@ -18,13 +17,13 @@ public class Main {
         while (true) {
             limpiarPantalla();
 
-            System.out.println("======= BUSCAMINAS =====");
-            System.out.println("1. FACIL");
-            System.out.println("2. MEDIO");
-            System.out.println("3. DIFICIL");
-            System.out.println("4. Ver puntuaciones");
-            System.out.println("5. Salir");
-            System.out.print("Elige una opcion: ");
+            System.out.println(textoColor("==== BUSCAMINAS ====", "negrita"));
+            System.out.println(textoColor("1. ", "negrita") + "FACIL");
+            System.out.println(textoColor("2. ", "negrita") + "MEDIO");
+            System.out.println(textoColor("3. ", "negrita") + "DIFICIL");
+            System.out.println(textoColor("4. ", "negrita") + "Ver puntuaciones");
+            System.out.println(textoColor("5. ", "negrita") + "Salir");
+            System.out.print(textoColor("Elige una opcion: ", "negrita"));
             int opcion = scInt.nextInt();
 
             long tiempo = 0;
@@ -57,73 +56,118 @@ public class Main {
 
             Buscaminas buscaminas = new Buscaminas(dificultad.getFilas(), dificultad.getColumnas(), dificultad.getBombas());
             buscaminas.generarTablero();
-            String[][] tablero = buscaminas.obtenerTablero();
 
             long tiempoInicio = System.currentTimeMillis();
 
             while (true) {
                 limpiarPantalla();
-                mostrarTablero(tablero);
+                int totalAncho = ("DIFICULTAD: " + dificultad.name() + "BOMBAS: " + dificultad.getBombas()).length() + 11;
+
+                System.out.println("-".repeat(totalAncho));
+                System.out.printf("|  %s%2s|%-2s%s  |\n", textoColor("DIFICULTAD: ", "azul") + dificultad.name(), "", "", textoColor("BOMBAS: ", "rojo") + dificultad.getBombas());
+                System.out.println("-".repeat(totalAncho));
+
+                String tableroConNumeros = "";
+                tableroConNumeros += "     ";
+                for (int i = 1; i <= dificultad.getColumnas(); i++) {
+                    tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
+                }
+                tableroConNumeros += "\n";
+
+                String tablero = buscaminas.obtenerTablero();
+                String[] filas = tablero.split("\n");
+                for (int i = 1; i <= filas.length; i++) {
+                    tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
+                    tableroConNumeros += filas[i - 1] + "\n";
+                }
+
+                System.out.println(tableroConNumeros);
+
 
                 String seleccion = "S";
-
+                int cont = 0;
                 while (!seleccion.equalsIgnoreCase("Y") && !seleccion.equalsIgnoreCase("N")) {
-                    System.out.print("¿Quieres bloquear o desbloquear una celda? (Y/N): ");
+                    if (cont != 0) {
+                        System.out.print(textoColor("[!]: Opcion invalida, ingrese 'Y' o 'N' por favor", "rojo"));
+                        Thread.sleep(1500);
+                        System.out.print("\r" + " ".repeat(50) + "\r");
+                        //continue;
+                    }
+                    System.out.print(textoColor("¿Quieres bloquear o desbloquear una celda? (Y/N): ", "negrita"));
                     seleccion = scString.nextLine();
+                    cont++;
                 }
 
                 int fila = -1;
-
+                cont = 0;
                 while (fila < 0 || fila > dificultad.getFilas() - 1) {
-                    System.out.print("Ingresa la fila de la celda (1-" + dificultad.getFilas() + "): ");
+                    if (cont != 0) {
+                        System.out.print(textoColor("[!]: Fila invalida, ingrese una fila entre 1 y " + dificultad.getFilas() + " por favor", "rojo"));
+                        Thread.sleep(1500);
+                        System.out.print("\r" + " ".repeat(50) + "\r");
+                    }
+                    System.out.print(textoColor("Ingresa la fila de la celda (1-" + dificultad.getFilas() + "): ", "negrita"));
                     fila = scInt.nextInt() - 1;
+                    cont++;
                 }
 
                 int columna = -1;
+                cont = 0;
 
                 while (columna < 0 || columna > dificultad.getColumnas() - 1) {
-                    System.out.print("Ingresa la columna de la celda (1-" + dificultad.getColumnas() + "): ");
+                    if (cont != 0) {
+                        System.out.print(textoColor("[!]: Columna invalida, ingrese una columna entre 1 y " + dificultad.getColumnas() + " por favor", "rojo"));
+                        Thread.sleep(1500);
+                        System.out.print("\r" + " ".repeat(50) + "\r");
+                    }
+                    System.out.print(textoColor("Ingresa la columna de la celda (1-" + dificultad.getColumnas() + "): ", "negrita"));
                     columna = scInt.nextInt() - 1;
+                    cont++;
+
                 }
 
                 if (seleccion.equalsIgnoreCase("Y")) {
                     boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
                     if (!estaRevelada) {
                         buscaminas.actualizarBloqueoCelda(fila, columna);
-                        tablero = buscaminas.obtenerTablero();
+                        System.out.println(buscaminas.obtenerTablero());
                     }
                 } else {
                     boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
                     if (!estaBloqueada) {
                         buscaminas.actualizarReveladoCelda(fila, columna);
-                        tablero = buscaminas.obtenerTablero();
+                        System.out.println(buscaminas.obtenerTablero());
                         if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
-                            mostrarTablero(tablero);
-                            System.out.println("Has perdido");
+                            //mostrarTablero(tablero);
+                            System.out.println(textoColor("¡Has perdido!", "rojo"));
                             Thread.sleep(3000);
                             break;
                         }
                     }
 
                     if (buscaminas.estaResuelto()) {
-                        tablero = buscaminas.obtenerTablero();
-                        mostrarTablero(tablero);
+                        System.out.println(buscaminas.obtenerTablero());
 
                         long tiempoFinal = System.currentTimeMillis();
                         tiempo = (tiempoFinal - tiempoInicio) / 1000;
 
+                        System.out.println(textoColor("¡Has ganado!", "azul"));
+                        System.out.println(textoColor("Dificultad: ", "negrita") + dificultad);
+                        System.out.println(textoColor("Tiempo: ", "negrita") + +tiempo + " seg");
+
                         boolean registroValido = false;
                         while (!registroValido) {
-                            System.out.println("Dificultad: " + dificultad);
-                            System.out.println("Tiempo: " + tiempo + " seg");
-                            System.out.print("Ingresa tu nombre: ");
+
+                            System.out.print(textoColor("Ingresa tu nombre: ", "negrita"));
                             String nombre = scString.nextLine();
 
                             String[] registro = {dificultad.toString(), nombre, tiempo + ""};
                             registroValido = dashboard.nuevoRegistro(registro);
 
                             if (!registroValido) {
-                                System.out.println("No has ingresado un nombre valido.");
+                                System.out.print(textoColor("[!]: No has ingresado un nombre valido", "rojo"));
+                                Thread.sleep(1500);
+                                System.out.print("\r" + " ".repeat(50) + "\r");
                             }
                         }
                         break;
@@ -152,19 +196,6 @@ public class Main {
         }
     }
 
-    private static void mostrarTablero(String[][] tablero) {
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                if (tablero[i][j].contains("-1")) {
-                    System.out.print("[" + tablero[i][j] + " ]");
-                } else {
-                    System.out.print("[ " + tablero[i][j] + " ]");
-                }
-            }
-            System.out.println();
-        }
-    }
-
     private static String textoColor(String texto, String color) {
         color = color.toUpperCase();
         String colorElegido;
@@ -182,11 +213,24 @@ public class Main {
             case "MORADO":
                 colorElegido = Configuracion.MORADO_ANSI;
                 break;
+            case "BLANCO":
+                colorElegido = Configuracion.BLANCO_ANSI;
+                break;
+            case "GRIS":
+                colorElegido = Configuracion.GRIS_ANSI;
+                break;
             default:
                 colorElegido = Configuracion.RESET_ANSI;
+                break;
         }
 
-        return colorElegido + texto + Configuracion.RESET_ANSI;
+        if (color.equalsIgnoreCase("negrita")) {
+            return "\u001B[1m" + texto + Configuracion.RESET_ANSI;
+        } else {
+            String negrita = "\u001B";
+            String colorNegrita = negrita + "[1;" + colorElegido.split("\\[")[1];
+            return colorNegrita + texto + Configuracion.RESET_ANSI;
+        }
     }
 }
 
