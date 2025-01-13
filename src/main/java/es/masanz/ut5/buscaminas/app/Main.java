@@ -5,6 +5,7 @@ import es.masanz.ut5.buscaminas.model.Dashboard;
 import es.masanz.ut5.buscaminas.model.Nivel;
 import es.masanz.ut5.buscaminas.util.Configuracion;
 
+import java.util.BitSet;
 import java.util.Scanner;
 
 public class Main {
@@ -17,28 +18,34 @@ public class Main {
         while (true) {
             limpiarPantalla();
 
-            System.out.println(textoColor("==== BUSCAMINAS ====", "negrita"));
-            System.out.println(textoColor("1. ", "negrita") + "FACIL");
-            System.out.println(textoColor("2. ", "negrita") + "MEDIO");
-            System.out.println(textoColor("3. ", "negrita") + "DIFICIL");
-            System.out.println(textoColor("4. ", "negrita") + "Ver puntuaciones");
-            System.out.println(textoColor("5. ", "negrita") + "Salir");
-            System.out.print(textoColor("Elige una opcion: ", "negrita"));
-            int opcion = scInt.nextInt();
+            String[] opciones = {"FACIL", "MEDIO", "DIFICIL", "Ver puntuaciones", "Salir"};
+
+            int opcion = menuInicio(scInt, opciones);
 
             long tiempo = 0;
 
             if (opcion == 4) {
                 String[][] puntuaciones = dashboard.obtenerContenido();
 
-                for (int i = 0; i < puntuaciones.length; i++) {
-                    for (int j = 0; j < puntuaciones[i].length; j++) {
-                        System.out.print(puntuaciones[i][j] + " ");
-                    }
-                    System.out.println();
-                }
+                String[] niveles = obtenerDatosColumna(puntuaciones, 0);
+                String[] nombres = obtenerDatosColumna(puntuaciones, 1);
+                String[] tiempos = obtenerDatosColumna(puntuaciones, 2);
 
-                System.out.print("Ingrese cualquier tecla para volver al menú principal...");
+                int anchoNivel = calcularMaxAncho("NIVEL", niveles);
+                int anchoNombre = calcularMaxAncho("NOMBRE", nombres);
+                int anchoTiempo = calcularMaxAncho("TIEMPO (S)", tiempos);
+                int anchoTotal = anchoNivel + anchoNombre + anchoTiempo + 16;
+
+                System.out.println();
+                System.out.println("-".repeat(anchoTotal) + "\n");
+                imprimirFilaPuntuacion(anchoNivel, anchoNombre, anchoTiempo, "NIVEL", "NOMBRE", "TIEMPO (S)");
+                System.out.println("-".repeat(anchoTotal));
+
+                for (int i = 0; i < puntuaciones.length; i++) {
+                    imprimirFilaPuntuacion(anchoNivel, anchoNombre, anchoTiempo, niveles[i], nombres[i], tiempos[i]);
+                }
+                System.out.println("-".repeat(anchoTotal) + "\n");
+                System.out.print(textoColor("Presiona \"enter\" para volver al menú principal...", "negrita"));
                 scString.nextLine();
                 continue;
             }
@@ -50,7 +57,8 @@ public class Main {
             Nivel dificultad = elegirDificultad(opcion);
 
             if (dificultad == null) {
-                System.out.println("Opción incorrecta");
+                System.out.println(textoColor("[!]: Opción incorrecta", "rojo"));
+                Thread.sleep(1000);
                 continue;
             }
 
@@ -59,30 +67,11 @@ public class Main {
 
             long tiempoInicio = System.currentTimeMillis();
 
+            int bombasDetectadas = 0;
+
             while (true) {
                 limpiarPantalla();
-                int totalAncho = ("DIFICULTAD: " + dificultad.name() + "BOMBAS: " + dificultad.getBombas()).length() + 11;
-
-                System.out.println("-".repeat(totalAncho));
-                System.out.printf("|  %s%2s|%-2s%s  |\n", textoColor("DIFICULTAD: ", "azul") + dificultad.name(), "", "", textoColor("BOMBAS: ", "rojo") + dificultad.getBombas());
-                System.out.println("-".repeat(totalAncho));
-
-                String tableroConNumeros = "";
-                tableroConNumeros += "     ";
-                for (int i = 1; i <= dificultad.getColumnas(); i++) {
-                    tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
-                }
-                tableroConNumeros += "\n";
-
-                String tablero = buscaminas.obtenerTablero();
-                String[] filas = tablero.split("\n");
-                for (int i = 1; i <= filas.length; i++) {
-                    tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
-                    tableroConNumeros += filas[i - 1] + "\n";
-                }
-
-                System.out.println(tableroConNumeros);
-
+                mostrarInfoJuego(buscaminas, dificultad.name(), bombasDetectadas, dificultad.getColumnas());
 
                 String seleccion = "S";
                 int cont = 0;
@@ -129,6 +118,11 @@ public class Main {
                 if (seleccion.equalsIgnoreCase("Y")) {
                     boolean estaRevelada = buscaminas.estaRevelada(fila, columna);
                     if (!estaRevelada) {
+                        if (buscaminas.estaBloqueada(fila, columna)) {
+                            bombasDetectadas--;
+                        } else {
+                            bombasDetectadas++;
+                        }
                         buscaminas.actualizarBloqueoCelda(fila, columna);
                         System.out.println(buscaminas.obtenerTablero());
                     }
@@ -136,9 +130,9 @@ public class Main {
                     boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
                     if (!estaBloqueada) {
                         buscaminas.actualizarReveladoCelda(fila, columna);
-                        System.out.println(buscaminas.obtenerTablero());
                         if (buscaminas.getTablero()[fila][columna].getNumero() == -1) {
-                            //mostrarTablero(tablero);
+                            System.out.println();
+                            mostrarInfoJuego(buscaminas, dificultad.name(), bombasDetectadas, dificultad.getColumnas());
                             System.out.println(textoColor("¡Has perdido!", "rojo"));
                             Thread.sleep(3000);
                             break;
@@ -183,6 +177,25 @@ public class Main {
         }
     }
 
+    private static int menuInicio(Scanner scInt, String[] opciones) {
+        System.out.println(textoColor("==== BUSCAMINAS ====", "negrita"));
+        System.out.println("--------------------");
+        for (int i = 0; i < opciones.length; i++) {
+            System.out.println(textoColor((i + 1) + ". ", "negrita") + opciones[i]);
+        }
+        System.out.println("--------------------");
+        System.out.print(textoColor("Elige una opción: ", "negrita"));
+        return scInt.nextInt();
+    }
+
+    private static String[] obtenerDatosColumna(String[][] matriz, int columna) {
+        String[] datos = new String[matriz.length];
+        for (int i = 0; i < matriz.length; i++) {
+            datos[i] = matriz[i][columna];
+        }
+        return datos;
+    }
+
     private static Nivel elegirDificultad(int opcion) {
         switch (opcion) {
             case 1:
@@ -194,6 +207,45 @@ public class Main {
             default:
                 return null;
         }
+    }
+
+    private static int calcularMaxAncho(String texto, String[] datos) {
+        int maxAncho = texto.length();
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i].length() > maxAncho) {
+                maxAncho = datos[i].length();
+            }
+        }
+
+        return maxAncho;
+    }
+
+    private static void imprimirFilaPuntuacion(int anchoNivel, int anchoNombre, int anchoTiempo, String nivel, String nombre, String tiempo) {
+        System.out.printf("|  %-" + anchoNivel + "s  |  %-" + anchoNombre + "s  |  %" + anchoTiempo + "s  |\n", nivel, nombre, tiempo);
+    }
+
+    private static void mostrarInfoJuego(Buscaminas buscaminas, String dificultad, int bombasDetectadas, int columnas) {
+        int totalAncho = ("DIFICULTAD: " + dificultad + "BOMBAS: " + bombasDetectadas).length() + 11;
+
+        System.out.println("-".repeat(totalAncho));
+        System.out.printf("|  %s%2s|%-2s%s  |\n", textoColor("DIFICULTAD: ", "azul") + dificultad, "", "", textoColor("BOMBAS: ", "rojo") + bombasDetectadas);
+        System.out.println("-".repeat(totalAncho));
+
+        String tableroConNumeros = "";
+        tableroConNumeros += "     ";
+        for (int i = 1; i <= columnas; i++) {
+            tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
+        }
+        tableroConNumeros += "\n";
+
+        String tablero = buscaminas.obtenerTablero();
+        String[] filas = tablero.split("\n");
+        for (int i = 1; i <= filas.length; i++) {
+            tableroConNumeros += textoColor(String.format("%3d  ", i), "blanco");
+            tableroConNumeros += filas[i - 1] + "\n";
+        }
+
+        System.out.println(tableroConNumeros);
     }
 
     private static String textoColor(String texto, String color) {
