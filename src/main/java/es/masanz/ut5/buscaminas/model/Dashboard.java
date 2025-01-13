@@ -25,7 +25,7 @@ public class Dashboard {
                 return false;
             }
 
-            //Comprobar que sea un numero
+            //Comprobar que sea un número
             int tiempo = 0;
 
             try {
@@ -37,6 +37,7 @@ public class Dashboard {
                 return false;
             }
 
+            //Añadir nuevo registro al final del dashboard
             this.contenido += String.join(",", registro) + ";";
 
             return true;

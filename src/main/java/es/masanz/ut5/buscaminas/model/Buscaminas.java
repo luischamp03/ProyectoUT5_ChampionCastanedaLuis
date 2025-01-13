@@ -4,7 +4,6 @@ import es.masanz.ut5.buscaminas.util.Configuracion;
 
 public class Buscaminas {
 
-    //Atributos privados
     private int filas, columnas;
     private int bombas;
     private Celda[][] tablero;
@@ -38,10 +37,6 @@ public class Buscaminas {
     public void colocarNumeros(Celda[][] tablero) {
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                /*if (tablero[i][j].getNumero() == -1) {
-                    continue;
-                }*/
-
                 if (tablero[i][j] == null) {
                     tablero[i][j] = new Celda(this.contarBombasAdyacentes(i, j));
                 }
@@ -51,53 +46,36 @@ public class Buscaminas {
 
     public int contarBombasAdyacentes(int fila, int columna) {
         int contBombas = 0;
-
-        if (this.esCeldaValida(fila - 1, columna) && this.tablero[fila - 1][columna] != null) {
-            if (this.tablero[fila - 1][columna].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila - 1, columna)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila + 1, columna) && this.tablero[fila + 1][columna] != null) {
-            if (this.tablero[fila + 1][columna].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila + 1, columna)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila, columna - 1) && this.tablero[fila][columna - 1] != null) {
-            if (this.tablero[fila][columna - 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila, columna - 1)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila, columna + 1) && this.tablero[fila][columna + 1] != null) {
-            if (this.tablero[fila][columna + 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila, columna + 1)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila - 1, columna - 1) && this.tablero[fila - 1][columna - 1] != null) {
-            if (this.tablero[fila - 1][columna - 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila - 1, columna - 1)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila - 1, columna + 1) && this.tablero[fila - 1][columna + 1] != null) {
-            if (this.tablero[fila - 1][columna + 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila - 1, columna + 1)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila + 1, columna - 1) && this.tablero[fila + 1][columna - 1] != null) {
-            if (this.tablero[fila + 1][columna - 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila + 1, columna - 1)) {
+            contBombas++;
         }
 
-        if (this.esCeldaValida(fila + 1, columna + 1) && this.tablero[fila + 1][columna + 1] != null) {
-            if (this.tablero[fila + 1][columna + 1].getNumero() == -1) {
-                contBombas++;
-            }
+        if (this.tieneBomba(fila + 1, columna + 1)) {
+            contBombas++;
         }
 
         return contBombas;
@@ -142,17 +120,18 @@ public class Buscaminas {
     }
 
     public void actualizarReveladoCelda(int fila, int columna) {
-        //Recursividad
-        if (!this.esCeldaValida(fila, columna) || this.tablero[fila][columna].isRevelada() /*|| this.tablero[fila][columna].getNumero() == -1*/) {
+        if (!this.esCeldaValida(fila, columna) || this.tablero[fila][columna].isRevelada()) {
             return;
         }
 
         if (this.tablero[fila][columna].isBloqueada()) {
             this.tablero[fila][columna].setBloqueada(false);
         }
+
         this.tablero[fila][columna].setRevelada(true);
 
         if (this.tablero[fila][columna].getNumero() == 0) {
+            //Recursividad
             this.actualizarReveladoCelda(fila - 1, columna);
             this.actualizarReveladoCelda(fila + 1, columna);
             this.actualizarReveladoCelda(fila, columna - 1);
@@ -188,7 +167,7 @@ public class Buscaminas {
 
     public String obtenerTablero() {
         StringBuilder tableroString = new StringBuilder();
-        
+
         for (int i = 0; i < this.filas; i++) {
             for (int j = 0; j < this.columnas; j++) {
                 String celda;
@@ -234,5 +213,12 @@ public class Buscaminas {
 
     public Celda[][] getTablero() {
         return this.tablero;
+    }
+
+    private boolean tieneBomba(int fila, int columna) {
+        if (this.esCeldaValida(fila, columna) && this.tablero[fila][columna] != null && this.tablero[fila][columna].getNumero() == -1) {
+            return true;
+        }
+        return false;
     }
 }

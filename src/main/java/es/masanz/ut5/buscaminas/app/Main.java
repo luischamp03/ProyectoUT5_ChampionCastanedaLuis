@@ -5,7 +5,6 @@ import es.masanz.ut5.buscaminas.model.Dashboard;
 import es.masanz.ut5.buscaminas.model.Nivel;
 import es.masanz.ut5.buscaminas.util.Configuracion;
 
-import java.util.BitSet;
 import java.util.Scanner;
 
 public class Main {
@@ -37,7 +36,7 @@ public class Main {
                 int anchoTotal = anchoNivel + anchoNombre + anchoTiempo + 16;
 
                 System.out.println();
-                System.out.println("-".repeat(anchoTotal) + "\n");
+                System.out.println("-".repeat(anchoTotal));
                 imprimirFilaPuntuacion(anchoNivel, anchoNombre, anchoTiempo, "NIVEL", "NOMBRE", "TIEMPO (S)");
                 System.out.println("-".repeat(anchoTotal));
 
@@ -58,7 +57,7 @@ public class Main {
 
             if (dificultad == null) {
                 System.out.println(textoColor("[!]: Opción incorrecta", "rojo"));
-                Thread.sleep(1000);
+                Thread.sleep(1300);
                 continue;
             }
 
@@ -78,9 +77,8 @@ public class Main {
                 while (!seleccion.equalsIgnoreCase("Y") && !seleccion.equalsIgnoreCase("N")) {
                     if (cont != 0) {
                         System.out.print(textoColor("[!]: Opcion invalida, ingrese 'Y' o 'N' por favor", "rojo"));
-                        Thread.sleep(1500);
+                        Thread.sleep(1800);
                         System.out.print("\r" + " ".repeat(50) + "\r");
-                        //continue;
                     }
                     System.out.print(textoColor("¿Quieres bloquear o desbloquear una celda? (Y/N): ", "negrita"));
                     seleccion = scString.nextLine();
@@ -89,10 +87,11 @@ public class Main {
 
                 int fila = -1;
                 cont = 0;
+
                 while (fila < 0 || fila > dificultad.getFilas() - 1) {
                     if (cont != 0) {
                         System.out.print(textoColor("[!]: Fila invalida, ingrese una fila entre 1 y " + dificultad.getFilas() + " por favor", "rojo"));
-                        Thread.sleep(1500);
+                        Thread.sleep(1800);
                         System.out.print("\r" + " ".repeat(50) + "\r");
                     }
                     System.out.print(textoColor("Ingresa la fila de la celda (1-" + dificultad.getFilas() + "): ", "negrita"));
@@ -106,7 +105,7 @@ public class Main {
                 while (columna < 0 || columna > dificultad.getColumnas() - 1) {
                     if (cont != 0) {
                         System.out.print(textoColor("[!]: Columna invalida, ingrese una columna entre 1 y " + dificultad.getColumnas() + " por favor", "rojo"));
-                        Thread.sleep(1500);
+                        Thread.sleep(1800);
                         System.out.print("\r" + " ".repeat(50) + "\r");
                     }
                     System.out.print(textoColor("Ingresa la columna de la celda (1-" + dificultad.getColumnas() + "): ", "negrita"));
@@ -124,7 +123,6 @@ public class Main {
                             bombasDetectadas++;
                         }
                         buscaminas.actualizarBloqueoCelda(fila, columna);
-                        System.out.println(buscaminas.obtenerTablero());
                     }
                 } else {
                     boolean estaBloqueada = buscaminas.estaBloqueada(fila, columna);
@@ -140,12 +138,12 @@ public class Main {
                     }
 
                     if (buscaminas.estaResuelto()) {
-                        System.out.println(buscaminas.obtenerTablero());
-
+                        System.out.println();
+                        mostrarInfoJuego(buscaminas, dificultad.name(), bombasDetectadas, dificultad.getColumnas());
                         long tiempoFinal = System.currentTimeMillis();
                         tiempo = (tiempoFinal - tiempoInicio) / 1000;
 
-                        System.out.println(textoColor("¡Has ganado!", "azul"));
+                        System.out.println(textoColor("¡Has ganado!", "azul") + "\n");
                         System.out.println(textoColor("Dificultad: ", "negrita") + dificultad);
                         System.out.println(textoColor("Tiempo: ", "negrita") + +tiempo + " seg");
 
@@ -160,7 +158,7 @@ public class Main {
 
                             if (!registroValido) {
                                 System.out.print(textoColor("[!]: No has ingresado un nombre valido", "rojo"));
-                                Thread.sleep(1500);
+                                Thread.sleep(1800);
                                 System.out.print("\r" + " ".repeat(50) + "\r");
                             }
                         }
@@ -178,7 +176,7 @@ public class Main {
     }
 
     private static int menuInicio(Scanner scInt, String[] opciones) {
-        System.out.println(textoColor("==== BUSCAMINAS ====", "negrita"));
+        System.out.println(textoColor("==== BUSCAMINAS ====", "azul"));
         System.out.println("--------------------");
         for (int i = 0; i < opciones.length; i++) {
             System.out.println(textoColor((i + 1) + ". ", "negrita") + opciones[i]);
